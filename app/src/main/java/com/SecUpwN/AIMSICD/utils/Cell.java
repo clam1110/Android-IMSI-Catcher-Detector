@@ -1,247 +1,3 @@
-package com.SecUpwN.AIMSICD.utils;
-
-import android.os.AsyncTask;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.os.SystemClock;
-import android.util.Log;
-
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-
-public class Cell implements Parcelable {
-
-    //Cell Specific Variables
-    private int cid;  // Cell Idenfication code
-    private int lac;  // Location Area Code
-    private int mcc;  // Mobile Country Code
-    private int mnc;  // Mobile Network Code
-    private int dbm;  // [dBm] RX signal "power"
-    private int psc;  // Primary Scrambling Code
-    private int rssi; // Relative Signal Strength Indicator [dBm, asu etc.]
-    private int timingAdvance;       // Timing Advance [LTE,GSM]
-    //private int propagationDelay;  // Propagation Delay [LTE]
-    private int sid;                 // Cell-ID for [CDMA]
-    private long timestamp;
-
-    //Tracked Cell Specific Variables
-    private int netType;
-    private double speed;
-    private double accuracy;
-    private double bearing;
-    private double lon;
-    private double lat;
-
-    {
-        cid = Integer.MAX_VALUE;
-        lac = Integer.MAX_VALUE;
-        mcc = Integer.MAX_VALUE;
-        mnc = Integer.MAX_VALUE;
-        dbm = Integer.MAX_VALUE;
-        psc = Integer.MAX_VALUE;
-        rssi = Integer.MAX_VALUE;
-        timingAdvance = Integer.MAX_VALUE;
-        sid = Integer.MAX_VALUE;
-        netType = Integer.MAX_VALUE;
-        lon = 0.0;
-        lat = 0.0;
-        speed = 0.0;
-        accuracy = 0.0;
-        bearing = 0.0;
-    }
-
-    public Cell() {}
-
-    public Cell(int cid, int lac, int mcc, int mnc, int dbm, long timestamp) {
-        super();
-        this.cid = cid;
-        this.lac = lac;
-        this.mcc = mcc;
-        this.mnc = mnc;
-        this.dbm = dbm;
-        rssi = Integer.MAX_VALUE;
-        this.psc = Integer.MAX_VALUE;
-        this.timestamp = timestamp;
-        timingAdvance = Integer.MAX_VALUE;
-        sid = Integer.MAX_VALUE;
-        netType = Integer.MAX_VALUE;
-        lon = 0.0;
-        lat = 0.0;
-        speed = 0.0;
-        accuracy = 0.0;
-        bearing = 0.0;
-    }
-
-    public Cell(int cid, int lac, int signal, int psc, int netType, boolean dbm) {
-        this.cid = cid;
-        this.lac = lac;
-        mcc = Integer.MAX_VALUE;
-        mnc = Integer.MAX_VALUE;
-        if (dbm) {
-            this.dbm = signal;
-        } else {
-            this.rssi = signal;
-        }
-        this.psc = psc;
-        this.netType = netType;
-        timingAdvance = Integer.MAX_VALUE;
-        sid = Integer.MAX_VALUE;
-        lon = 0.0;
-        lat = 0.0;
-        speed = 0.0;
-        accuracy = 0.0;
-        bearing = 0.0;
-        this.timestamp = SystemClock.currentThreadTimeMillis();
-    }
-
-    public Cell(int cid, int lac, int mcc, int mnc, int dbm, double accuracy, double speed,
-            double bearing, int netType, long timestamp) {
-        this.cid = cid;
-        this.lac = lac;
-        this.mcc = mcc;
-        this.mnc = mnc;
-        this.dbm = dbm;
-        rssi = Integer.MAX_VALUE;
-        timingAdvance = Integer.MAX_VALUE;
-        sid = Integer.MAX_VALUE;
-        this.accuracy = accuracy;
-        this.speed = speed;
-        this.bearing = bearing;
-        this.netType = netType;
-        this.timestamp = timestamp;
-    }
-
-    /**
-     * Current Cell ID
-     *
-     * @return int representing the Cell ID from GSM or CDMA devices
-     */
-    public int getCID() {
-        return this.cid;
-    }
-
-    /**
-     * Sets current Cell ID
-     *
-     * @param cid Cell ID
-     */
-    public void setCID(int cid) {
-        this.cid = cid;
-    }
-
-    /**
-     * Location Area Code (LAC) of current Cell
-     *
-     * @return int Current cells Location Area Code
-     */
-    public int getLAC() {
-        return this.lac;
-    }
-
-    /**
-     * Set Location Area Code (LAC) of current Cell
-     *
-     * @param lac Location Area Code
-     */
-    public void setLAC(int lac) {
-        this.lac = lac;
-    }
-
-    /**
-     * Mobile Country Code (Mcc) of current Cell
-     *
-     * @return int Current cells Mobile Country Code
-     */
-    public int getMCC() {
-        return this.mcc;
-    }
-
-    /**
-     * Set Mobile Country Code (Mcc) of current Cell
-     *
-     * @param mcc Mobile Country Code
-     */
-    public void setMCC(int mcc) {
-        this.mcc = mcc;
-    }
-
-    /**
-     * Mobile Network Code (Mnc) of current Cell
-     *
-     * @return int Current cells Mobile Network Code
-     */
-    public int getMNC() {
-        return this.mnc;
-    }
-
-    /**
-     * Set Mobile Network Code (Mnc) of current Cell
-     *
-     * @param mnc Mobile Network Code
-     */
-    public void setMNC(int mnc) {
-        this.mnc = mnc;
-    }
-
-    /**
-     * Primary Scrambling Code (PSC) of current Cell
-     *
-     * @return int Current cells Primary Scrambling Code
-     */
-    public int getPSC() {
-        return this.psc;
-    }
-
-    /**
-     * Set Primary Scrambling Code (PSC) of current Cell
-     *
-     * @param psc Primary Scrambling Code
-     */
-    public void setPSC(int psc) {
-        if (psc == -1) {
-            this.psc = Integer.MAX_VALUE;
-        } else {
-            this.psc = psc;
-        }
-    }
-
-    /**
-     * CDMA System ID
-     *
-     * @return System ID or Integer.MAX_VALUE if not supported
-     */
-    public int getSID() {
-        return this.sid;
-    }
-
-    /**
-     * Set CDMA System ID (SID) of current Cell
-     *
-     * @param sid CDMA System ID
-     */
-    public void setSID(int sid) {
-        this.sid = sid;
-    }
-
-    /**
-     * Signal Strength Measurement (dBm)
-     *
-     * @return Signal Strength Measurement (dBm)
-     */
-    public int getDBM() {
-        return dbm;
-    }
-
-    /**
-     * Set Signal Strength (dBm) of current Cell
-     *
-     * @param dbm Signal Strength (dBm)
-     */
-    public void setDBM(int dbm) {
-        this.dbm = dbm;
-    }
 
     /**
      * Longitude Geolocation of current Cell
@@ -457,6 +213,8 @@ public class Cell implements Parcelable {
         return this.getCID() != Integer.MAX_VALUE && this.getLAC() != Integer.MAX_VALUE;
     }
 
+
+    // What is this doing ??? (And from where is it called?)
     public static class CellLookUpAsync extends AsyncTask<String, Void, List<Cell>> {
         public AsyncResponse delegate=null;
 
@@ -525,12 +283,22 @@ public class Cell implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[] {String.valueOf(this.cid),
-                String.valueOf(this.lac), String.valueOf(this.mcc), String.valueOf(this.mnc),
-                String.valueOf(this.dbm), String.valueOf(this.psc), String.valueOf(this.rssi),
-                String.valueOf(this.timingAdvance), String.valueOf(this.sid), String.valueOf(this.netType),
-                String.valueOf(this.lon), String.valueOf(this.lat), String.valueOf(this.speed),
-                String.valueOf(this.accuracy), String.valueOf(this.bearing)});
+        dest.writeStringArray(new String[] {
+                String.valueOf(this.cid),
+                String.valueOf(this.lac),
+                String.valueOf(this.mcc),
+                String.valueOf(this.mnc),
+                String.valueOf(this.dbm),
+                String.valueOf(this.psc),
+                String.valueOf(this.rssi),
+                String.valueOf(this.timingAdvance),
+                String.valueOf(this.sid),
+                String.valueOf(this.netType),
+                String.valueOf(this.lon),
+                String.valueOf(this.lat),
+                String.valueOf(this.speed),
+                String.valueOf(this.accuracy),
+                String.valueOf(this.bearing)});
     }
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Cell createFromParcel(Parcel in) {
