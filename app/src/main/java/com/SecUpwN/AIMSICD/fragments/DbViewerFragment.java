@@ -25,6 +25,8 @@ import com.SecUpwN.AIMSICD.adapters.MeasuredCellStrengthCardInflater;
 import com.SecUpwN.AIMSICD.adapters.OpenCellIdCardInflater;
 import com.SecUpwN.AIMSICD.adapters.SilentSmsCardData;
 import com.SecUpwN.AIMSICD.adapters.SilentSmsCardInflater;
+import com.SecUpwN.AIMSICD.adapters.EventLogCardInflater;
+import com.SecUpwN.AIMSICD.adapters.EventLogItemData;
 
 public class DbViewerFragment extends Fragment {
 
@@ -289,28 +291,32 @@ public class DbViewerFragment extends Fragment {
                     return adapter;
                 }
 
-/*                // Table:   EventLog
-                case "EventLog Data": {
-                    BaseInflaterAdapter<CardItemData> adapter
-                            = new BaseInflaterAdapter<>( new EventLogCardInflater() );
-                    int count = tableData.getCount();
-                    while (tableData.moveToNext()) {
-                        CardItemData data = new CardItemData(
-                                "time: " + tableData.getString(0),  // time
-                                "LAC: " + tableData.getString(1),   // LAC
-                                "CID: " + tableData.getString(2),   // CID
-                                "PSC: " + tableData.getString(3),   // PSC
-                                "Lat: " + tableData.getString(4),   // gpsd_lat
-                                "Lon: " + tableData.getString(5),   // gpsd_lon
-                                "accu: " + tableData.getString(6),  // gpsd_accu (accuracy in [m])
-                                "id: " + tableData.getString(7),    // DF_id
-                                "event: " + tableData.getString(8), // DF_description
+
+
+            // Table:   EventLog Table is displayed with EventLogCardInflater and EventLogItemData
+              case "EventLog": {
+                  BaseInflaterAdapter<EventLogItemData> adapter
+                          = new BaseInflaterAdapter<>( new EventLogCardInflater() );
+
+                  int count = tableData.getCount();
+                  while (tableData.moveToNext()) {
+                      EventLogItemData data = new EventLogItemData(
+                                "Time: " + tableData.getDouble(0),  // time
+                                "CID: " + tableData.getInt(2),   // CID
+                                "LAC: " + tableData.getInt(1),   // LAC
+                                "PSC: " + tableData.getInt(3),   // PSC
+                                "Lat: " + tableData.getDouble(4),   // gpsd_lat
+                                "Lon: " + tableData.getDouble(5),   // gpsd_lon
+                                "Accuracy: " + tableData.getDouble(6),  // gpsd_accu (accuracy in [m])
+                                "Detection ID: " + tableData.getInt(7),    // DF_id
+                                "Event: " + tableData.getString(8), // DF_description
                                 "" + (tableData.getPosition() + 1) + " / " + count);
                         adapter.addItem(data, false);
                     }
                     return adapter;
                 }
-*/
+
+
 /*
                 // Maybe we can skip this one?
                 // Table:   DetectionFlags

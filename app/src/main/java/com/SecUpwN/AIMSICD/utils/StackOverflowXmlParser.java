@@ -10,10 +10,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- *  Description:    TODO: please add this...
- */
 public class StackOverflowXmlParser {
     // We don't use namespaces
     private static final String ns = null;
