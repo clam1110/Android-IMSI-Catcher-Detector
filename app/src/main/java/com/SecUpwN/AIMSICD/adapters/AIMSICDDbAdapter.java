@@ -1,4 +1,78 @@
-ERE name = ? AND id = ?", new String[] {"David", "2"});
+package com.SecUpwN.AIMSICD.adapters;
+
+import com.SecUpwN.AIMSICD.AIMSICD;
+import com.SecUpwN.AIMSICD.utils.Cell;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
+
+
+/**
+ * Brief:   Handles the AMISICD DataBase tables (creation, population, updates,
+ *
+ * Description:
+ *
+ *      This class handle all the AMISICD DataBase maintenance operations, like
+ *      creation, population, updates, backup, restore and various selections.
+ *
+ *
+ *
+ * Current Issues:
+ *
+ *      As of 2015-01-01 we will start migrating from the old DB structure
+ *      to the new one as detailed here:
+ *      https://github.com/SecUpwN/Android-IMSI-Catcher-Detector/issues/215
+ *      Please try to work on only one table at the time, before pushing
+ *      new PRs.
+ *
+ *      [ ] We'd like to Export the entire DB (like a dump), so we need ...
+ *      [ ] Clarify the difference between cell.getCID() and CellID (see insertCell() below.)
+ *
+ *  ChangeLog:
+ *
+ *      2015-01-22  E:V:A   Started DBe_import migration
+ *      2015-01-23  E:V:A   ~~changed silent sms column names~~ NOT!
+ *                          Added EventLog table
+ *                          
+ *
+ *  Notes:
+ *
+ *  ======  !! IMPORTANT !!  ======================================================================
+ *  For damn good reasons, we should try to stay with mDb.rawQuery() and NOT with mDb.query().
+ *  In fact we should try to avoid the entire AOS SQLite API as much as possible, to keep our
+ *  queries and SQL related clean, portable and neat. That's what most developers understand.
+ *
+ *  See:
+ *  [1] http://stackoverflow.com/questions/1122679/querying-and-working-with-cursors-in-sqlite-on-android
+ *  [2] http://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html#rawQuery%28java.lang.String,%20java.lang.String%5B%5D%29
+ *  ===============================================================================================
+ *
+ *  +   Some examples we can use:
+ *
+ *   1) "Proper" style:
+ *      rawQuery("SELECT id, name FROM people WHERE name = ? AND id = ?", new String[] {"David", "2"});
  *
  *   2) Hack style: (avoiding the use of "?")
  *      String q = "SELECT * FROM customer WHERE _id = " + customerDbId  ;
